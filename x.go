@@ -1,11 +1,21 @@
-package utils
+package main
 
 import (
 	"os"
+	"fmt"
 	"bufio"
 )
 
-func FileLastLine(fpath string) (ll []byte, err error) {
+func main()  {
+
+	line, err := lastFileLine("log.txt")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(".....>", string(line))
+}
+
+func lastFileLine(fpath string) (ll []byte, err error) {
 	fi, err := os.Stat(fpath)
 	if err != nil {
 		return
