@@ -1,5 +1,6 @@
 composer.lock
 vendor
 src/package.xml
+main
 .idea
 .DS_Store
