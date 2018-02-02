@@ -7,6 +7,7 @@ import (
 	"qiniustg"
 	"sync"
 	"utils"
+	"localstg"
 )
 
 type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) error
@@ -14,22 +15,24 @@ type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) 
 func main() {
 
 	cfgPath := flag.String("cfg_path", "cfg.json", "")
+	filePath := flag.String("file_path", "cfg.json", "")
 	flag.Parse()
-
-	cfg, err := config.LoadConfig(*cfgPath)
-	if err != nil {
-		panic(err)
-	}
-
-	cli := Client{cfg}
-	qiniuCli := qiniustg.NewClient(cfg)
 
 	inCh := make(chan string, 1000*100)
 	doneCh := make(chan string, 1000*10)
 	failedCh := make(chan string, 1000*10)
 
-	go qiniuCli.List(inCh)
-	go cli.Proc(inCh, doneCh, failedCh, qiniustg.qpulp)
+	cfg, err := config.LoadConfig(*cfgPath)
+	if err != nil {
+		panic(err)
+	}
+	cli := Client{cfg}
+	//qiniuCli := qiniustg.NewClient(cfg)
+	//go qiniuCli.List(inCh)
+
+
+	go localstg.List(inCh, *filePath)
+	go cli.Proc(inCh, doneCh, failedCh, qiniustg.ChangeFileType)
 
 	doneLogWait := make(chan bool)
 	failedLogWait := make(chan bool)
