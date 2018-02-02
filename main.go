@@ -32,7 +32,7 @@ func main() {
 
 
 	go localstg.List(inCh, *filePath)
-	go cli.Proc(inCh, doneCh, failedCh, qiniustg.ChangeFileType)
+	go cli.Proc(inCh, doneCh, failedCh, qiniustg.Qpulp)
 
 	doneLogWait := make(chan bool)
 	failedLogWait := make(chan bool)
