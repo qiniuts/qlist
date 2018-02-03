@@ -1,18 +1,18 @@
 package main
 
 import (
+	"config"
 	"flag"
 	"log"
-	"sync"
 	"qiniustg"
-	"config"
+	"sync"
 	"utils"
 	"localstg"
 )
 
 type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) error
 
-func main()  {
+func main() {
 
 	cfgPath := flag.String("cfg_path", "cfg.json", "")
 	filePath := flag.String("file_path", "cfg.json", "")
@@ -30,8 +30,9 @@ func main()  {
 	//qiniuCli := qiniustg.NewClient(cfg)
 	//go qiniuCli.List(inCh)
 
+
 	go localstg.List(inCh, *filePath)
-	go cli.Proc(inCh, doneCh, failedCh, qiniustg.ChangeFileType)
+	go cli.Proc(inCh, doneCh, failedCh, qiniustg.Qpulp)
 
 	doneLogWait := make(chan bool)
 	failedLogWait := make(chan bool)
@@ -48,7 +49,7 @@ type Client struct {
 	config.Config
 }
 
-func (c *Client) Proc(inCh, doneCh, failedCh chan string, batch batchProcFunc)  {
+func (c *Client) Proc(inCh, doneCh, failedCh chan string, batch batchProcFunc) {
 	wg := sync.WaitGroup{}
 	wg.Add(c.WorkerCount)
 
@@ -63,16 +64,16 @@ func (c *Client) Proc(inCh, doneCh, failedCh chan string, batch batchProcFunc)  
 	return
 }
 
-func (c *Client) worker(keysCh, processedCh, failedCh chan string, batch batchProcFunc, wg *sync.WaitGroup)  {
+func (c *Client) worker(keysCh, processedCh, failedCh chan string, batch batchProcFunc, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 	keys := []string{}
 	for {
-		key, ok := <- keysCh
+		key, ok := <-keysCh
 		if ok {
 			processedCh <- key
 			keys = append(keys, key)
-			if  len(keys) < 1000 {
+			if len(keys) < 1000 {
 				continue
 			}
 		} else if len(keys) == 0 {
@@ -87,4 +88,3 @@ func (c *Client) worker(keysCh, processedCh, failedCh chan string, batch batchPr
 		keys = []string{}
 	}
 }
-
