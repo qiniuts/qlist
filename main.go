@@ -3,11 +3,11 @@ package main
 import (
 	"config"
 	"flag"
+	"localstg"
 	"log"
 	"qiniustg"
 	"sync"
 	"utils"
-	"localstg"
 )
 
 type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) error
@@ -18,31 +18,38 @@ func main() {
 	filePath := flag.String("file_path", "cfg.json", "")
 	flag.Parse()
 
-	inCh := make(chan string, 1000*100)
-	doneCh := make(chan string, 1000*10)
-	failedCh := make(chan string, 1000*10)
-
 	cfg, err := config.LoadConfig(*cfgPath)
 	if err != nil {
 		panic(err)
 	}
 	cli := Client{cfg}
+
+	//channels to cache records and proc result
+	recordsCh := make(chan string, 1000*100)
+	doneRecordsCh := make(chan string, 1000*10)
+	procResultCh := make(chan string, 1000*10)
+
+	//list records local file
+	go localstg.List(recordsCh, *filePath)
+
+	//list records qiniu storage
 	//qiniuCli := qiniustg.NewClient(cfg)
-	//go qiniuCli.List(inCh)
+	//go qiniuCli.List(recordsCh)
 
+	//proc records
+	go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.Qpulp)
 
-	go localstg.List(inCh, *filePath)
-	go cli.Proc(inCh, doneCh, failedCh, qiniustg.Qpulp)
+	//log proc result
+	doneRecordsLogWait := make(chan bool)
+	procResultLogWait := make(chan bool)
+	go utils.Log(doneRecordsCh, cli.DoneRecordsPath, doneRecordsLogWait)
+	go utils.Log(procResultCh, cli.ProcResultsPath, procResultLogWait)
+	log.Println("Done Record in file: ", cli.DoneRecordsPath)
+	log.Println("Proc Result in file: ", cli.ProcResultsPath)
+	<-doneRecordsLogWait
+	<-procResultLogWait
 
-	doneLogWait := make(chan bool)
-	failedLogWait := make(chan bool)
-
-	go utils.Log(doneCh, cli.DoneRecordPath, doneLogWait)
-	go utils.Log(failedCh, "errors.log", failedLogWait)
-
-	<-doneLogWait
-	<-failedLogWait
-	log.Println("list and proc done!")
+	log.Println("List and Proc done!")
 }
 
 type Client struct {

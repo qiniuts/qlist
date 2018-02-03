@@ -1,0 +1,8 @@
+{
+  "access_key": "",
+  "secret_key": "",
+  "bucket": "",
+  "done_records_fpath": "done_records.log",
+  "proc_results_fpath": "proc_results.log",
+  "worker_count": 10
+}

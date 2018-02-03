@@ -1,19 +1,20 @@
 package config
 
 import (
-	"os"
 	"encoding/json"
+	"os"
 )
 
 type Config struct {
-	AccessKey string `json:"access_key"`
-	SecretKey string `json:"secret_key"`
-	Bucket string `json:"bucket"`
-	DoneRecordPath string `json:"success_record_path"`
-	WorkerCount int `json:"worker_count"`
+	AccessKey       string `json:"access_key"`
+	SecretKey       string `json:"secret_key"`
+	Bucket          string `json:"bucket"`
+	DoneRecordsPath string `json:"done_records_fpath"`
+	ProcResultsPath string `json:"proc_results_fpath"`
+	WorkerCount     int    `json:"worker_count"`
 }
 
-func LoadConfig(fpath string) (cfg Config, err error)  {
+func LoadConfig(fpath string) (cfg Config, err error) {
 
 	fh, err := os.Open(fpath)
 	if err != nil {
