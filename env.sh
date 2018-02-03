@@ -1,2 +1,3 @@
-#!/usr/bin
-export GOPATH=$(pwd)":$GOPATH"
+#!/usr/local/bin/bash
+
+export GOPATH="${GOPATH}:"$(pwd)
