@@ -15,7 +15,7 @@ type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) 
 func main() {
 
 	cfgPath := flag.String("cfg_path", "cfg.json", "")
-	filePath := flag.String("file_path", "cfg.json", "")
+	filePath := flag.String("file_path", "keys.txt", "")
 	flag.Parse()
 
 	cfg, err := config.LoadConfig(*cfgPath)
