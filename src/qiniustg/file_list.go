@@ -1,22 +1,22 @@
 package qiniustg
 
 import (
-	"github.com/qiniu/api.v7/storage"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"sync"
 	"encoding/base64"
 	"encoding/json"
-	"utils"
+	"github.com/qiniu/api.v7/auth/qbox"
+	"github.com/qiniu/api.v7/storage"
 	"log"
+	"sync"
+	"utils"
 )
 
-func (c *Client) List(inCh chan string)  {
+func (c *Client) List(inCh chan string) {
 
 	mac := qbox.NewMac(c.AccessKey, c.SecretKey)
-	bucketMgr := storage.NewBucketManager(mac,nil)
+	bucketMgr := storage.NewBucketManager(mac, nil)
 
 	wg := sync.WaitGroup{}
-	marker, _ := newestListMarker(c.DoneRecordPath)
+	marker, _ := newestListMarker(c.DoneRecordsPath)
 
 	for {
 		items, _, markerOut, hasNext, err := bucketMgr.ListFiles(c.Bucket, "", "", marker, 1000)
@@ -53,7 +53,7 @@ func newestListMarker(fpath string) (marker string, err error) {
 	}
 
 	mk := struct {
-		C int `json:"c"`
+		C int    `json:"c"`
 		K string `json:"k"`
 	}{}
 

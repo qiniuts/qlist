@@ -37,7 +37,8 @@ func main() {
 	//go qiniuCli.List(recordsCh)
 
 	//proc records
-	go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.Qpulp)
+	//go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.Qpulp)
+	go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.ChangeFileStatus)
 
 	//log proc result
 	doneRecordsLogWait := make(chan bool)
