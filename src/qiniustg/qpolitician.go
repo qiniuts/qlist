@@ -10,11 +10,19 @@ import (
 func Qpolitician(retCh chan string, keys []string, _ config.Config) error {
 
 	for _, key := range keys {
-		resp, _ := http.Get(key + "?qpolitician")
-		defer resp.Body.Close()
+		resp, err := http.Get(key + "?qpolitician")
+		if err != nil {
+			retCh <- fmt.Sprintf("%s\t%d\t%s", key, 900, err.Error())
+			continue
+		}
 
+		defer resp.Body.Close()
 		code := resp.StatusCode
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			retCh <- fmt.Sprintf("%s\t%d\t%s", key, 900, err.Error())
+			continue
+		}
 
 		retCh <- fmt.Sprintf("%s\t%d\t%s", key, code, body)
 	}
