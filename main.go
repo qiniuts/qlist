@@ -38,7 +38,8 @@ func main() {
 
 	//proc records
 	//go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.Qpulp)
-	go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.ChangeFileStatus)
+	//go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.ChangeFileStatus)
+	go cli.Proc(recordsCh, doneRecordsCh, procResultCh, qiniustg.Qpolitician)
 
 	//log proc result
 	doneRecordsLogWait := make(chan bool)
