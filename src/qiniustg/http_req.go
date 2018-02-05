@@ -6,7 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func HttpReq(retCh chan string, urls []string, cfg config.Config) error {
+func HttpReq(retCh chan string, urls []string, cfg config.Config) {
 
 	for _, u := range urls {
 		code, body, err := fasthttp.Get(nil, u+cfg.FopQuery)
@@ -16,5 +16,4 @@ func HttpReq(retCh chan string, urls []string, cfg config.Config) error {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", u, code, body)
 		}
 	}
-	return nil
 }

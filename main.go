@@ -11,7 +11,7 @@ import (
 	"utils"
 )
 
-type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) error
+type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config)
 
 var procFuncs = map[string]batchProcFunc{
 	"req":      qiniustg.HttpReq,
@@ -71,42 +71,38 @@ type Client struct {
 	config.Config
 }
 
-func (c *Client) Proc(inCh, doneCh, failedCh chan string, batch batchProcFunc) {
+func (c *Client) Proc(recordsCh, processedCh, retCh chan string, batch batchProcFunc) {
 	wg := sync.WaitGroup{}
 	wg.Add(c.WorkerCount)
 
 	for i := 0; i < c.WorkerCount; i++ {
-		go c.worker(inCh, doneCh, failedCh, batch, &wg)
+		go c.worker(recordsCh, processedCh, retCh, batch, &wg)
 	}
 
 	wg.Wait()
-	close(doneCh)
-	close(failedCh)
+	close(processedCh)
+	close(retCh)
 
 	return
 }
 
-func (c *Client) worker(keysCh, processedCh, failedCh chan string, batch batchProcFunc, wg *sync.WaitGroup) {
+func (c *Client) worker(recordsCh, processedCh, retCh chan string, batch batchProcFunc, wg *sync.WaitGroup) {
 
 	defer wg.Done()
-	keys := []string{}
+	records := []string{}
 	for {
-		key, ok := <-keysCh
+		record, ok := <-recordsCh
 		if ok {
-			processedCh <- key
-			keys = append(keys, key)
-			if len(keys) < 1000 {
+			processedCh <- record
+			records = append(records, record)
+			if len(records) < 1000 {
 				continue
 			}
-		} else if len(keys) == 0 {
+		} else if len(records) == 0 {
 			break
 		}
 
-		err := batch(failedCh, keys, c.Config)
-		if err != nil {
-			log.Println("Error", err)
-		}
-
-		keys = []string{}
+		batch(retCh, records, c.Config)
+		records = []string{}
 	}
 }
