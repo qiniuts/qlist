@@ -14,19 +14,19 @@ import (
 type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config) error
 
 var procFuncs = map[string]batchProcFunc{
-	"qpulp":       qiniustg.Qpulp,
-	"qpolitician": qiniustg.Qpolitician,
-	"chtype":      qiniustg.ChangeFileType,
-	"chstatus":    qiniustg.ChangeFileStatus,
+	"req":      qiniustg.HttpReq,
+	"chtype":   qiniustg.ChangeFileType,
+	"chstatus": qiniustg.ChangeFileStatus,
 }
 
 func main() {
 
 	cfgPath := flag.String("cfg_path", "cfg.json", "")
 	filePath := flag.String("file_path", "keys.txt", "")
-	flag.Parse()
 
+	flag.Parse()
 	funcName := flag.Arg(0)
+
 	procFunc, ok := procFuncs[funcName]
 	if !ok {
 		fmt.Printf("No %s Function", funcName)

@@ -2,6 +2,7 @@
   "access_key": "",
   "secret_key": "",
   "bucket": "",
+  "fop_query": "?imageView2/2/w/720|qpolitician",
   "done_records_fpath": "done_records.log",
   "proc_results_fpath": "proc_results.log",
   "worker_count": 10
