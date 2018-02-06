@@ -11,12 +11,18 @@ import (
 	"utils"
 )
 
-type batchProcFunc func(failedCh chan string, keys []string, cfg config.Config)
+//type procFunc func(retCh chan string, records []string, cfg config.Config)
+type procFunc func(recordsCh, retCh chan string, cfg config.Config)
 
-var procFuncs = map[string]batchProcFunc{
+//var procFuncs = map[string]procFunc{
+//	"req":      qiniustg.HttpReq,
+//	"chtype":   qiniustg.ChangeFileType,
+//	"chstatus": qiniustg.ChangeFileStatus,
+//}
+var procFuncs = map[string]procFunc{
 	"req":      qiniustg.HttpReq,
-	"chtype":   qiniustg.ChangeFileType,
-	"chstatus": qiniustg.ChangeFileStatus,
+	"chstatus": batchFunc(qiniustg.ChangeFileStatus),
+	//"chtype": batchFunc(qiniustg.ChangeFileType),
 }
 
 func main() {
@@ -41,7 +47,6 @@ func main() {
 
 	//channels to cache records and proc result
 	recordsCh := make(chan string, 1000*100)
-	doneRecordsCh := make(chan string, 1000*10)
 	procResultCh := make(chan string, 1000*10)
 
 	//list records local file
@@ -52,16 +57,12 @@ func main() {
 	//go qiniuCli.List(recordsCh)
 
 	//proc records
-	go cli.Proc(recordsCh, doneRecordsCh, procResultCh, procFunc)
+	go cli.work(recordsCh, procResultCh, procFunc)
 
 	//log proc result
-	doneRecordsLogWait := make(chan bool)
 	procResultLogWait := make(chan bool)
-	go utils.Log(doneRecordsCh, cli.DoneRecordsPath, doneRecordsLogWait)
 	go utils.Log(procResultCh, cli.ProcResultsPath, procResultLogWait)
-	log.Println("Done Record in file: ", cli.DoneRecordsPath)
 	log.Println("Proc Result in file: ", cli.ProcResultsPath)
-	<-doneRecordsLogWait
 	<-procResultLogWait
 
 	log.Println("List and Proc done!")
@@ -71,38 +72,39 @@ type Client struct {
 	config.Config
 }
 
-func (c *Client) Proc(recordsCh, processedCh, retCh chan string, batch batchProcFunc) {
+func (c *Client) work(recordsCh, retCh chan string, proc procFunc) {
 	wg := sync.WaitGroup{}
 	wg.Add(c.WorkerCount)
 
 	for i := 0; i < c.WorkerCount; i++ {
-		go c.worker(recordsCh, processedCh, retCh, batch, &wg)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			proc(recordsCh, retCh, c.Config)
+		}(&wg)
 	}
 
 	wg.Wait()
-	close(processedCh)
 	close(retCh)
-
 	return
 }
 
-func (c *Client) worker(recordsCh, processedCh, retCh chan string, batch batchProcFunc, wg *sync.WaitGroup) {
-
-	defer wg.Done()
-	records := []string{}
-	for {
-		record, ok := <-recordsCh
-		if ok {
-			processedCh <- record
-			records = append(records, record)
-			if len(records) < 1000 {
-				continue
+func batchFunc(batch func(retCh chan string, records []string, cfg config.Config)) func(recordsCh, retCh chan string, cfg config.Config) {
+	return func(recordsCh, retCh chan string, cfg config.Config) {
+		records := []string{}
+		for {
+			record, ok := <-recordsCh
+			if ok {
+				records = append(records, record)
+				if len(records) < 1000 {
+					continue
+				}
 			}
-		} else if len(records) == 0 {
-			break
-		}
 
-		batch(retCh, records, c.Config)
-		records = []string{}
+			if len(records) == 0 {
+				break
+			}
+			batch(retCh, records, cfg)
+			records = []string{}
+		}
 	}
 }

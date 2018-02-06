@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-func HttpReq(retCh chan string, urls []string, cfg config.Config) {
+func HttpReq(recordsCh, retCh chan string, cfg config.Config) {
 
-	for _, url := range urls {
+	for url := range recordsCh {
 		resp, err := http.Get(url + cfg.FopQuery)
 		if err != nil {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
@@ -26,5 +26,4 @@ func HttpReq(retCh chan string, urls []string, cfg config.Config) {
 
 		retCh <- fmt.Sprintf("%s\t%d\t%s", url, code, body)
 	}
-	// return nil
 }
