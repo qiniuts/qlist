@@ -9,10 +9,10 @@ import (
 
 func HttpReq(retCh chan string, urls []string, cfg config.Config) {
 
-	for _, key := range keys {
-		resp, err := http.Get(key + cfg.FopQuery)
+	for _, url := range urls {
+		resp, err := http.Get(url + cfg.FopQuery)
 		if err != nil {
-			retCh <- fmt.Sprintf("%s\t%d\t%s", key, 900, err.Error())
+			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue
 		}
 
@@ -20,12 +20,11 @@ func HttpReq(retCh chan string, urls []string, cfg config.Config) {
 		code := resp.StatusCode
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			retCh <- fmt.Sprintf("%s\t%d\t%s", key, 900, err.Error())
+			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue
 		}
 
-		retCh <- fmt.Sprintf("%s\t%d\t%s", key, code, body)
+		retCh <- fmt.Sprintf("%s\t%d\t%s", url, code, body)
 	}
-	return nil
-
+	// return nil
 }
