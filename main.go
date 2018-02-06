@@ -11,24 +11,19 @@ import (
 	"utils"
 )
 
-//type procFunc func(retCh chan string, records []string, cfg config.Config)
 type procFunc func(recordsCh, retCh chan string, cfg config.Config)
 
-//var procFuncs = map[string]procFunc{
-//	"req":      qiniustg.HttpReq,
-//	"chtype":   qiniustg.ChangeFileType,
-//	"chstatus": qiniustg.ChangeFileStatus,
-//}
 var procFuncs = map[string]procFunc{
 	"req":      qiniustg.HttpReq,
+	"dumplist": localstg.DumpList,
 	"chstatus": batchFunc(qiniustg.ChangeFileStatus),
-	//"chtype": batchFunc(qiniustg.ChangeFileType),
+	"chtype":   batchFunc(qiniustg.ChangeFileType),
 }
 
 func main() {
 
 	cfgPath := flag.String("cfg_path", "cfg.json", "")
-	filePath := flag.String("file_path", "keys.txt", "")
+	//filePath := flag.String("file_path", "keys.txt", "")
 
 	flag.Parse()
 	funcName := flag.Arg(0)
@@ -50,11 +45,11 @@ func main() {
 	procResultCh := make(chan string, 1000*10)
 
 	//list records local file
-	go localstg.List(recordsCh, *filePath)
+	//go localstg.List(recordsCh, *filePath)
 
 	//list records qiniu storage
-	//qiniuCli := qiniustg.NewClient(cfg)
-	//go qiniuCli.List(recordsCh)
+	qiniuCli := qiniustg.NewClient(cfg)
+	go qiniuCli.List(recordsCh)
 
 	//proc records
 	go cli.work(recordsCh, procResultCh, procFunc)
