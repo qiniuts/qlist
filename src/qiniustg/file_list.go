@@ -16,7 +16,7 @@ func (c *Client) List(inCh chan string) {
 	bucketMgr := storage.NewBucketManager(mac, nil)
 
 	wg := sync.WaitGroup{}
-	marker, _ := newestListMarker(c.DoneRecordsPath)
+	marker, _ := newestListMarker(c.ProcResultsPath)
 
 	for {
 		items, _, markerOut, hasNext, err := bucketMgr.ListFiles(c.Bucket, "", "", marker, 1000)
@@ -30,9 +30,7 @@ func (c *Client) List(inCh chan string) {
 		go func(wgp *sync.WaitGroup, listItems []storage.ListItem) {
 			defer wgp.Done()
 			for _, item := range listItems {
-				if item.Type != 1 {
-					inCh <- item.Key
-				}
+				inCh <- item.Key
 			}
 		}(&wg, items)
 

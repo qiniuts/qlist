@@ -1,13 +1,13 @@
 package localstg
 
 import (
-	"os"
 	"bufio"
+	"os"
 )
 
-func List(inCh chan string, fpath string)  {
+func (c Client) List(inCh chan string) {
 
-	f, err := os.OpenFile(fpath, os.O_RDONLY, 0666)
+	f, err := os.OpenFile(c.ToDoRecordsPath, os.O_RDONLY, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -19,4 +19,3 @@ func List(inCh chan string, fpath string)  {
 
 	close(inCh)
 }
-

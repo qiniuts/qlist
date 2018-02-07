@@ -23,7 +23,6 @@ var procFuncs = map[string]procFunc{
 func main() {
 
 	cfgPath := flag.String("cfg_path", "cfg.json", "")
-	//filePath := flag.String("file_path", "keys.txt", "")
 
 	flag.Parse()
 	funcName := flag.Arg(0)
@@ -44,12 +43,13 @@ func main() {
 	recordsCh := make(chan string, 1000*100)
 	procResultCh := make(chan string, 1000*10)
 
-	//list records local file
-	//go localstg.List(recordsCh, *filePath)
-
-	//list records qiniu storage
-	qiniuCli := qiniustg.NewClient(cfg)
-	go qiniuCli.List(recordsCh)
+	if cfg.IsQiniuSrc() {
+		//list records qiniu storage
+		go qiniustg.NewClient(cfg).List(recordsCh)
+	} else {
+		//list records local file
+		go localstg.NewClient(cfg).List(recordsCh)
+	}
 
 	//proc records
 	go cli.work(recordsCh, procResultCh, procFunc)
