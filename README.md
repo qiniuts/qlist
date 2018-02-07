@@ -5,10 +5,12 @@ list qiniu files in qiniu bucket or scan local file and proc the item
 edit your config 
 ```
 {
+  "src": "localstg",
+  "to_do_records_path": "to_do_records_path.txt",
   "access_key": "",
   "secret_key": "",
   "bucket": "",
-  "done_records_fpath": "done_records.log",
+  "fop_query": "?imageView2/2/w/720|qpolitician",
   "proc_results_fpath": "proc_results.log",
   "worker_count": 10
 }
@@ -29,6 +31,25 @@ make install
 Usage of ./qlist:
   -cfg_path string
     	 (default "cfg.json")
-  -file_path string
-    	 (default "keys.txt")
+
+```
+
+## batch change file type
+```
+./qlist -cfg_path cfg.json chtype
+```
+
+## batch change file status
+```
+./qlist -cfg_path cfg.json chstatus
+```
+
+## proc file by fop
+```
+./qlist -cfg_path cfg.json req
+```
+
+## list bucket files
+```
+./qlist -cfg_path cfg.json bucketlist
 ```

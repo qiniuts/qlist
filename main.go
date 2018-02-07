@@ -14,10 +14,10 @@ import (
 type procFunc func(recordsCh, retCh chan string, cfg config.Config)
 
 var procFuncs = map[string]procFunc{
-	"req":      qiniustg.HttpReq,
-	"dumplist": localstg.DumpList,
-	"chstatus": batchFunc(qiniustg.ChangeFileStatus),
-	"chtype":   batchFunc(qiniustg.ChangeFileType),
+	"req":        qiniustg.HttpReq,
+	"bucketlist": localstg.BucketList,
+	"chstatus":   batchFunc(qiniustg.ChangeFileStatus),
+	"chtype":     batchFunc(qiniustg.ChangeFileType),
 }
 
 func main() {
