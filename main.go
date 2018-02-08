@@ -14,19 +14,35 @@ import (
 type procFunc func(recordsCh, retCh chan string, cfg config.Config)
 
 var procFuncs = map[string]procFunc{
-	"req":        qiniustg.HttpReq,
-	"bucketlist": localstg.BucketList,
-	"chstatus":   batchFunc(qiniustg.ChangeFileStatus),
-	"chtype":     batchFunc(qiniustg.ChangeFileType),
+	"req":          qiniustg.HttpReq,
+	"bucket_list":  localstg.BucketList,
+	"key_cp_tolow": qiniustg.KeyToLower,
+	"chstatus":     batchFunc(qiniustg.ChangeFileStatus),
+	"chtype":       batchFunc(qiniustg.ChangeFileType),
+}
+
+func usage() {
+	fmt.Println(
+		`
+		./qlist -cfg_path cfg.json req
+		./qlist -cfg_path cfg.json bucket_list
+		./qlist -cfg_path cfg.json key_cp_tolow
+		./qlist -cfg_path cfg.json chstatus
+		./qlist -cfg_path cfg.json chtype
+	`)
 }
 
 func main() {
 
-	cfgPath := flag.String("cfg_path", "cfg.json", "")
-
+	cfgPath := flag.String("cfg_path", "", "")
 	flag.Parse()
-	funcName := flag.Arg(0)
 
+	if *cfgPath == "" {
+		usage()
+		return
+	}
+
+	funcName := flag.Arg(0)
 	procFunc, ok := procFuncs[funcName]
 	if !ok {
 		fmt.Printf("No %s Function", funcName)

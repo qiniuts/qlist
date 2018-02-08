@@ -3,16 +3,12 @@ package qiniustg
 import (
 	"config"
 	"fmt"
-	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
 )
 
 func ChangeFileStatus(retCh chan string, keys []string, cfg config.Config) {
-	mac := qbox.NewMac(cfg.AccessKey, cfg.SecretKey)
-	stgCfg := storage.Config{
-		UseHTTPS: false,
-	}
-	bucketManager := storage.NewBucketManager(mac, &stgCfg)
+
+	bucketManager := NewClient(cfg).BucketMgr()
 	chstatusOps := []string{}
 
 	for _, key := range keys {
