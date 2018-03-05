@@ -19,6 +19,7 @@ var procFuncs = map[string]procFunc{
 	"key_cp_tolow": qiniustg.KeyToLower,
 	"chstatus":     batchFunc(qiniustg.ChangeFileStatus),
 	"chtype":       batchFunc(qiniustg.ChangeFileType),
+	"async_fetch":  qiniustg.AsyncFetch,
 }
 
 func usage() {
@@ -29,6 +30,7 @@ func usage() {
 		./qlist -cfg_path cfg.json key_cp_tolow
 		./qlist -cfg_path cfg.json chstatus
 		./qlist -cfg_path cfg.json chtype
+		./qlist -cfg_path cfg.json async_fetch
 	`)
 }
 
