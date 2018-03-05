@@ -53,3 +53,14 @@ Usage of ./qlist:
 ```
 ./qlist -cfg_path cfg.json bucketlist
 ```
+
+## async fetch url
+url file format: 
+```
+<url> \t <key> \t <md5>
+```
+
+run:
+```
+./qlist -cfg_path cfg.json async_fetch
+```
