@@ -21,7 +21,6 @@ func HttpReq(recordsCh, retCh chan string, cfg config.Config) {
 			if err != nil {
 				return "", err
 			}
-			fmt.Println(ipEntries)
 
 			for _, ip := range ipEntries {
 				ips = append(ips, ip.String())
@@ -31,8 +30,6 @@ func HttpReq(recordsCh, retCh chan string, cfg config.Config) {
 		}
 
 		rand.Seed(time.Now().UTC().UnixNano())
-
-		fmt.Println(ips)
 
 		return ips[rand.Intn(len(ips))], nil
 	}
@@ -51,8 +48,6 @@ func HttpReq(recordsCh, retCh chan string, cfg config.Config) {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue
 		}
-
-		fmt.Println(ip)
 		req.URL.Host = ip
 
 		resp, err := cli.Do(req)
