@@ -15,6 +15,7 @@ type procFunc func(recordsCh, retCh chan string, cfg config.Config)
 
 var procFuncs = map[string]procFunc{
 	"req":          qiniustg.HttpReq,
+	"download":     qiniustg.Download,
 	"bucket_list":  localstg.BucketList,
 	"key_cp_tolow": qiniustg.KeyToLower,
 	"chstatus":     batchFunc(qiniustg.ChangeFileStatus),
@@ -26,6 +27,7 @@ func usage() {
 	fmt.Println(
 		`
 		./qlist -cfg_path cfg.json req
+		./qlist -cfg_path cfg.json download
 		./qlist -cfg_path cfg.json bucket_list
 		./qlist -cfg_path cfg.json key_cp_tolow
 		./qlist -cfg_path cfg.json chstatus
