@@ -7,6 +7,7 @@ import (
 	"localstg"
 	"log"
 	"qiniustg"
+	"runtime"
 	"sync"
 	"utils"
 )
@@ -27,7 +28,6 @@ func usage() {
 		`
 		./qlist -cfg_path cfg.json req
 		./qlist -cfg_path cfg.json bucket_list
-		./qlist -cfg_path cfg.json key_cp_tolow
 		./qlist -cfg_path cfg.json chstatus
 		./qlist -cfg_path cfg.json chtype
 		./qlist -cfg_path cfg.json async_fetch
@@ -56,6 +56,8 @@ func main() {
 		panic(err)
 	}
 	cli := Client{cfg}
+
+	runtime.GOMAXPROCS(runtime.NumCPU() * 4)
 
 	//channels to cache records and proc result
 	recordsCh := make(chan string, 1000*100)
