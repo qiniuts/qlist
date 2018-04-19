@@ -1,10 +1,10 @@
 {
-  "src": "localstg",
-  "to_do_records_path": "to_do_records_path.txt",
+  "src": "",
+  "to_do_records_path": "2018-image.log",
   "access_key": "",
   "secret_key": "",
   "bucket": "",
-  "fop_query": "?imageView2/2/w/720|qpolitician",
+  "fop_query": "",
   "proc_results_fpath": "proc_results.log",
-  "worker_count": 10
+  "worker_count": 5
 }
