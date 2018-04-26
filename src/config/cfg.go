@@ -22,6 +22,8 @@ type Config struct {
 
 	//concurency num
 	WorkerCount int `json:"worker_count"`
+
+	ReqHeaderHost string `json:"req_header_host"`
 }
 
 func LoadConfig(fpath string) (cfg Config, err error) {

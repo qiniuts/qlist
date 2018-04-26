@@ -7,13 +7,20 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"utils"
 )
 
-func Download(recordsCh, retCh chan string, _ config.Config) {
+func Download(recordsCh, retCh chan string, cfg config.Config) {
 
 	for url := range recordsCh {
-		resp, err := http.Get(url)
 
+		req, err := utils.NewRequest("GET", url+cfg.FopQuery, nil, cfg.ReqHeaderHost)
+		if err != nil {
+			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
+			continue
+		}
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue

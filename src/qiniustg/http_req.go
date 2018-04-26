@@ -4,53 +4,21 @@ import (
 	"config"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
-	"net"
 	"net/http"
-	"time"
+	"utils"
 )
 
 func HttpReq(recordsCh, retCh chan string, cfg config.Config) {
 
-	dIps := map[string][]string{}
-	getIp := func(host string) (ip string, err error) {
-
-		ips, ok := dIps[host]
-		if !ok {
-			ipEntries, err := net.LookupIP(host)
-			if err != nil {
-				return "", err
-			}
-
-			for _, ip := range ipEntries {
-				ips = append(ips, ip.String())
-			}
-
-			dIps[host] = ips
-		}
-
-		rand.Seed(time.Now().UTC().UnixNano())
-
-		return ips[rand.Intn(len(ips))], nil
-	}
-	cli := http.DefaultClient
-
 	for url := range recordsCh {
 
-		req, err := http.NewRequest("GET", url+cfg.FopQuery, nil)
+		req, err := utils.NewRequest("GET", url+cfg.FopQuery, nil, cfg.ReqHeaderHost)
 		if err != nil {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue
 		}
 
-		ip, err := getIp(req.Host)
-		if err != nil {
-			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
-			continue
-		}
-		req.URL.Host = ip
-
-		resp, err := cli.Do(req)
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue

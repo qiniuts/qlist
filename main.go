@@ -91,6 +91,9 @@ type Client struct {
 
 func (c *Client) work(recordsCh, retCh chan string, proc procFunc) {
 	wg := sync.WaitGroup{}
+	if c.WorkerCount == 0 {
+		c.WorkerCount = 10
+	}
 	wg.Add(c.WorkerCount)
 
 	for i := 0; i < c.WorkerCount; i++ {
