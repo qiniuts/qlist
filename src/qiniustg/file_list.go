@@ -19,7 +19,7 @@ func (c *Client) List(inCh chan string) {
 	marker, _ := newestListMarker(c.ProcResultsPath)
 
 	for {
-		items, _, markerOut, hasNext, err := bucketMgr.ListFiles(c.Bucket, "", "", marker, 1000)
+		items, _, markerOut, hasNext, err := bucketMgr.ListFiles(c.Bucket, c.Prefix, "", marker, 1000)
 		if err != nil {
 			log.Println("ListFiles", err)
 			continue

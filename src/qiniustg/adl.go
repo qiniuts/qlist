@@ -13,7 +13,12 @@ func Adl(recordsCh, retCh chan string, cfg config.Config) {
 
 	mac := qbox.NewMac(cfg.AccessKey, cfg.SecretKey)
 	cli := AClient{storage.NewClient(mac, nil)}
-	uid := "1380703881"
+	uid_, ok := cfg.GetExtraParam("adl", "uid")
+	fmt.Println(cfg)
+	if !ok {
+		panic("no uid in config")
+	}
+	uid := uid_.(string)
 
 	for key := range recordsCh {
 
@@ -37,7 +42,7 @@ type AClient struct {
 
 func (cli *AClient) get(uid, bucket, key string) ([]byte, error) {
 
-	url1 := "https://iovip.qbox.me/aget/"
+	url1 := "https://iovip.qbox.me/adminget/"
 	params := map[string][]string{
 		"uid":    {uid},
 		"bucket": {bucket},
