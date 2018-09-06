@@ -11,6 +11,7 @@ make install
 
 ## download
 [macos 下载](http://devtools.qiniu.com/darwin/amd64/qlist)
+
 [linux 下载](http://devtools.qiniu.com/linux/amd64/qlist)
 
 ## edit config
