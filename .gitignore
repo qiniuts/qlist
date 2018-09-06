@@ -2,7 +2,7 @@ composer.lock
 vendor
 src/package.xml
 main
-qlist
+qlist_macos
 qlist_linux
 .idea
 .DS_Store
