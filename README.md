@@ -1,6 +1,18 @@
 # qlist
 list qiniu files in qiniu bucket or scan local file and proc the item
 
+## build
+
+```
+source env.sh
+make env
+make install
+```
+
+## download
+[macos 下载](http://devtools.qiniu.com/darwin/amd64/qlist)
+[linux 下载](http://devtools.qiniu.com/linux/amd64/qlist)
+
 ## edit config
 edit your config 
 ```
@@ -14,14 +26,6 @@ edit your config
   "proc_results_fpath": "proc_results.log",
   "worker_count": 10
 }
-```
-
-## build
-
-```
-source env.sh
-make env
-make install
 ```
 
 ## usage
