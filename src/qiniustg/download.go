@@ -8,14 +8,13 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"utils"
 )
 
 func Download(recordsCh, retCh chan string, cfg config.Config) {
 
 	for url := range recordsCh {
 
-		req, err := utils.NewRequest("GET", url+cfg.FopQuery, nil, cfg.ReqHeaderHost)
+		req, err := http.NewRequest("GET", url+cfg.FopQuery, nil)
 		if err != nil {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue

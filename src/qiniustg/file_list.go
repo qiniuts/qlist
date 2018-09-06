@@ -61,9 +61,8 @@ func (c *QNClient) List2(inCh chan string) {
 
 		for ret := range retChan {
 			marker = ret.Marker
-
 			if ret.Item.Key == "" {
-				break
+				continue
 			}
 
 			inCh <- fmt.Sprintf("%s\t%d\t%d", ret.Item.Key, ret.Item.Fsize, ret.Item.PutTime)
