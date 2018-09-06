@@ -3,6 +3,7 @@ vendor
 src/package.xml
 main
 qlist
+qlist_linux
 .idea
 .DS_Store
 pkg
