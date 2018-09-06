@@ -58,7 +58,6 @@ func (c *QNClient) List2(inCh chan string) {
 			log.Error("ListFiles Error:", err, c.Bucket, marker)
 			continue
 		}
-		log.Info("================>")
 
 		for ret := range retChan {
 			marker = ret.Marker
