@@ -59,7 +59,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	cli := Client{cfg}
+	cli := QNClient{cfg}
 
 	runtime.GOMAXPROCS(runtime.NumCPU() * 4)
 
@@ -69,10 +69,10 @@ func main() {
 
 	if cfg.IsQiniuSrc() {
 		//list records qiniu storage
-		go qiniustg.NewClient(cfg).List(recordsCh)
+		go qiniustg.NewQNClient(cfg).List2(recordsCh)
 	} else {
 		//list records local file
-		go localstg.NewClient(cfg).List(recordsCh)
+		go localstg.NewQNClient(cfg).List(recordsCh)
 	}
 
 	//proc records
@@ -87,11 +87,11 @@ func main() {
 	log.Println("List and Proc done!")
 }
 
-type Client struct {
+type QNClient struct {
 	config.Config
 }
 
-func (c *Client) work(recordsCh, retCh chan string, proc procFunc) {
+func (c *QNClient) work(recordsCh, retCh chan string, proc procFunc) {
 	wg := sync.WaitGroup{}
 	if c.WorkerCount == 0 {
 		c.WorkerCount = 10

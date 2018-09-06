@@ -5,34 +5,32 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 )
 
-var dIps map[string][]string
-
-func init() {
-	dIps = map[string][]string{}
-}
+var dIps sync.Map
 
 func DmIp(host string) (ip string, err error) {
 
-	ips, ok := dIps[host]
+	ips, ok := dIps.Load(host)
 	if !ok {
+
 		ipEntries, err := net.LookupIP(host)
 		if err != nil {
 			return "", err
 		}
-
 		for _, ip := range ipEntries {
-			ips = append(ips, ip.String())
+			ips = append(ips.([]string), ip.String())
 		}
 
-		dIps[host] = ips
+		dIps.Store(host, ips)
 	}
 
+	dmIps := []string(ips.([]string))
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	return ips[rand.Intn(len(ips))], nil
+	return dmIps[rand.Intn(len(dmIps))], nil
 }
 
 func NewRequest(method, url1 string, body io.Reader, headerHost string) (req *http.Request, err error) {

@@ -2,17 +2,16 @@ package qiniustg
 
 import (
 	"config"
+	"context"
 	"fmt"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
-	"github.com/qiniu/x/rpc.v7"
 	"io/ioutil"
 )
 
 func Adl(recordsCh, retCh chan string, cfg config.Config) {
 
-	mac := qbox.NewMac(cfg.AccessKey, cfg.SecretKey)
-	cli := AClient{storage.NewClient(mac, nil)}
+	cli := NewAQNClient(cfg)
 	uid_, ok := cfg.GetExtraParam("adl", "uid")
 	fmt.Println(cfg)
 	if !ok {
@@ -36,11 +35,17 @@ func Adl(recordsCh, retCh chan string, cfg config.Config) {
 	}
 }
 
-type AClient struct {
-	*rpc.Client
+type AQNClient struct {
+	*qbox.Mac
+	*storage.Client
 }
 
-func (cli *AClient) get(uid, bucket, key string) ([]byte, error) {
+func NewAQNClient(cfg config.Config) *AQNClient {
+	mac := qbox.NewMac(cfg.AccessKey, cfg.SecretKey)
+	return &AQNClient{mac, &storage.DefaultClient}
+}
+
+func (cli *AQNClient) get(uid, bucket, key string) ([]byte, error) {
 
 	url1 := "https://iovip.qbox.me/adminget/"
 	params := map[string][]string{
@@ -48,7 +53,9 @@ func (cli *AClient) get(uid, bucket, key string) ([]byte, error) {
 		"bucket": {bucket},
 		"key":    {key},
 	}
-	resp, err := cli.DoRequestWithForm(nil, "POST", url1, params)
+	ctx := context.WithValue(context.TODO(), "mac", cli.Mac)
+
+	resp, err := cli.DoRequestWithForm(ctx, "POST", url1, nil, params)
 	if err != nil {
 		return nil, err
 	}

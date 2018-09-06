@@ -26,9 +26,9 @@ func Md5(recordsCh, retCh chan string, cfg config.Config) {
 
 		key := fs[0]
 		createT := fs[3]
-		url := "http://img.momocdn.com/" + key
+		url1 := "http://img.momocdn.com/" + key
 
-		resp, err := http.Get(url + cfg.FopQuery)
+		resp, err := http.Get(url1 + cfg.FopQuery)
 		if err != nil {
 			retCh <- fmt.Sprintf("%d\t%s\t%s", 900, key, err.Error())
 			continue

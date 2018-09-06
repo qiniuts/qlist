@@ -3,14 +3,16 @@ package qiniustg
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
-	"log"
+	"github.com/qiniu/x/log.v7"
+	"strings"
 	"sync"
 	"utils"
 )
 
-func (c *Client) List(inCh chan string) {
+func (c *QNClient) List(inCh chan string) {
 
 	mac := qbox.NewMac(c.AccessKey, c.SecretKey)
 	bucketMgr := storage.NewBucketManager(mac, nil)
@@ -43,10 +45,40 @@ func (c *Client) List(inCh chan string) {
 	close(inCh)
 }
 
+func (c *QNClient) List2(inCh chan string) {
+
+	mac := qbox.NewMac(c.AccessKey, c.SecretKey)
+	bucketMgr := storage.NewBucketManager(mac, nil)
+	marker, _ := newestListMarker(c.ProcResultsPath)
+	defer close(inCh)
+
+	for {
+		retChan, err := bucketMgr.ListBucket(c.Bucket, c.Prefix, "", marker)
+		if err != nil {
+			log.Error("ListFiles Error:", err, c.Bucket, marker)
+			continue
+		}
+		log.Info("================>")
+
+		for ret := range retChan {
+			marker = ret.Marker
+
+			if ret.Item.Key == "" {
+				break
+			}
+
+			inCh <- fmt.Sprintf("%s\t%d\t%d", ret.Item.Key, ret.Item.Fsize, ret.Item.PutTime)
+			if marker == "" {
+				return
+			}
+		}
+	}
+}
+
 func newestListMarker(fpath string) (marker string, err error) {
 
 	line, err := utils.FileLastLine(fpath)
-	if err != nil {
+	if err != nil || string(line) == "" {
 		return
 	}
 
@@ -55,7 +87,11 @@ func newestListMarker(fpath string) (marker string, err error) {
 		K string `json:"k"`
 	}{}
 
-	mk.K = string(line)
+	ls := strings.Fields(string(line))
+	if len(ls) < 1 {
+		return
+	}
+	mk.K = ls[0]
 
 	jmk, err := json.Marshal(mk)
 	if err != nil {

@@ -20,7 +20,7 @@ func ChangeFileType(retCh chan string, keys []string, cfg config.Config) {
 
 func changeFileType(keys []string, cfg config.Config) (rets []storage.BatchOpRet, err error) {
 
-	bucketManager := NewClient(cfg).BucketMgr()
+	bucketManager := NewQNClient(cfg).BucketMgr()
 	chtypeOps := []string{}
 
 	for _, key := range keys {

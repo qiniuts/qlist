@@ -6,15 +6,15 @@ import (
 	"github.com/qiniu/api.v7/storage"
 )
 
-type Client struct {
+type QNClient struct {
 	config.Config
 }
 
-func NewClient(cfg config.Config) *Client {
-	return &Client{cfg}
+func NewQNClient(cfg config.Config) *QNClient {
+	return &QNClient{cfg}
 }
 
-func (c *Client) BucketMgr() *storage.BucketManager {
+func (c *QNClient) BucketMgr() *storage.BucketManager {
 
 	mac := qbox.NewMac(c.AccessKey, c.SecretKey)
 	stgCfg := storage.Config{

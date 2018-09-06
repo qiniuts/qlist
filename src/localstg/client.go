@@ -2,10 +2,10 @@ package localstg
 
 import "config"
 
-type Client struct {
+type QNClient struct {
 	config.Config
 }
 
-func NewClient(cfg config.Config) *Client {
-	return &Client{cfg}
+func NewQNClient(cfg config.Config) *QNClient {
+	return &QNClient{cfg}
 }

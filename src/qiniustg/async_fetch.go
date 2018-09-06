@@ -9,7 +9,7 @@ import (
 
 func AsyncFetch(recordsCh, retCh chan string, cfg config.Config) {
 
-	bucketManager := NewClient(cfg).BucketMgr()
+	bucketManager := NewQNClient(cfg).BucketMgr()
 	param := storage.AsyncFetchParam{}
 
 	for record := range recordsCh {

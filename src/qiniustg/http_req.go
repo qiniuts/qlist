@@ -24,14 +24,13 @@ func HttpReq(recordsCh, retCh chan string, cfg config.Config) {
 			continue
 		}
 
-		defer resp.Body.Close()
-		code := resp.StatusCode
 		body, err := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
 		if err != nil {
 			retCh <- fmt.Sprintf("%s\t%d\t%s", url, 900, err.Error())
 			continue
 		}
 
-		retCh <- fmt.Sprintf("%s\t%d\t%s", url, code, body)
+		retCh <- fmt.Sprintf("%s\t%d\t%s", url, resp.StatusCode, body)
 	}
 }

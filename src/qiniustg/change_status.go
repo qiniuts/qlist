@@ -8,7 +8,7 @@ import (
 
 func ChangeFileStatus(retCh chan string, keys []string, cfg config.Config) {
 
-	bucketManager := NewClient(cfg).BucketMgr()
+	bucketManager := NewQNClient(cfg).BucketMgr()
 	chstatusOps := []string{}
 
 	for _, key := range keys {

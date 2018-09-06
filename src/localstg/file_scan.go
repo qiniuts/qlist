@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func (c Client) List(inCh chan string) {
+func (c QNClient) List(inCh chan string) {
 
 	f, err := os.OpenFile(c.ToDoRecordsPath, os.O_RDONLY, 0666)
 	if err != nil {
