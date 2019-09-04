@@ -10,6 +10,9 @@ import (
 func Download(recordsCh, retCh chan string, cfg config.Config) {
 
 	for url1 := range recordsCh {
+
+		fmt.Println(url1)
+
 		err := utils.Retry(func() error {
 			_, err := grab.Get(".", url1)
 			return err
