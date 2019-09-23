@@ -1,10 +1,8 @@
 {
-  "src": "qiniustg|localst",
-  "to_do_records_path": "2018-image.log",
-  "access_key": "",
-  "secret_key": "",
-  "bucket": "",
-  "fop_query": "",
+  "src": "/Users/liangchao/test",
+  "to_do_records_path": "/Users/liangchao/test",
+  "access_key": "**",
+  "secret_key": "**",
   "proc_results_fpath": "proc_results.log",
-  "worker_count": 5
+  "worker_count": 5000
 }

@@ -23,6 +23,8 @@ var procFuncs = map[string]procFunc{
 	"chtype":      batchFunc(qiniustg.ChangeFileType),
 	"async_fetch": qiniustg.AsyncFetch,
 	"md5":         qiniustg.Md5,
+	"getHttpCode": qiniustg.GetHttpCode,
+	"getPrivateUrl":qiniustg.GetPrivateUrl,
 }
 
 func usage() {
@@ -35,6 +37,9 @@ func usage() {
 		./qlist -cfg_path cfg.json chtype
 		./qlist -cfg_path cfg.json async_fetch
 		./qlist -cfg_path cfg.json md5
+		./qlist -cfg_path cfg.json getHttpCode
+		./qlist -cfg_path cfg.json getPrivateUrl
+
 	`)
 }
 

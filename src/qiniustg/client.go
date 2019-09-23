@@ -20,6 +20,13 @@ func (c *QNClient) BucketMgr() *storage.BucketManager {
 	stgCfg := storage.Config{
 		UseHTTPS: false,
 	}
-
 	return storage.NewBucketManager(mac, &stgCfg)
+}
+
+
+func (c *QNClient) StorgeMgr() *qbox.Mac {
+
+	mac := qbox.NewMac(c.AccessKey, c.SecretKey)
+
+	return mac
 }
