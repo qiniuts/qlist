@@ -3,13 +3,13 @@ package qiniustg
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/storage"
-	"github.com/qiniu/x/log.v7"
 	"strings"
 	"sync"
 	"utils"
+
+	"github.com/qiniu/api.v7/auth/qbox"
+	"github.com/qiniu/api.v7/storage"
+	"github.com/qiniu/x/log.v7"
 )
 
 func (c *QNClient) List(inCh chan string) {
@@ -65,7 +65,11 @@ func (c *QNClient) List2(inCh chan string) {
 				continue
 			}
 
-			inCh <- fmt.Sprintf("%s\t%d\t%d", ret.Item.Key, ret.Item.Fsize, ret.Item.PutTime)
+			item, err := json.Marshal(ret.Item)
+			if err != nil {
+				panic(err)
+			}
+			inCh <- string(item)
 			if marker == "" {
 				return
 			}

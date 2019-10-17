@@ -15,16 +15,16 @@ import (
 type procFunc func(recordsCh, retCh chan string, cfg config.Config)
 
 var procFuncs = map[string]procFunc{
-	"req":         qiniustg.HttpReq,
-	"download":    qiniustg.Download,
-	"bucket_list": localstg.BucketList,
-	"adl":         qiniustg.Adl,
-	"chstatus":    batchFunc(qiniustg.ChangeFileStatus),
-	"chtype":      batchFunc(qiniustg.ChangeFileType),
-	"async_fetch": qiniustg.AsyncFetch,
-	"md5":         qiniustg.Md5,
-	"getHttpCode": qiniustg.GetHttpCode,
-	"getPrivateUrl":qiniustg.GetPrivateUrl,
+	"req":           qiniustg.HttpReq,
+	"download":      qiniustg.Download,
+	"bucket_list":   localstg.BucketList,
+	"adl":           qiniustg.Adl,
+	"chstatus":      batchFunc(qiniustg.ChangeFileStatus),
+	"chtype":        batchFunc(qiniustg.ChangeFileType),
+	"async_fetch":   qiniustg.AsyncFetch,
+	"md5":           qiniustg.Md5,
+	"getHttpCode":   qiniustg.GetHttpCode,
+	"getPrivateUrl": qiniustg.GetPrivateUrl,
 }
 
 func usage() {
